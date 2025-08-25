@@ -15,6 +15,13 @@ export async function getServerSideProps({ params }) {
             return { notFound: true };
         }
 
+        // Logika tambahan untuk menangani data embed video yang hilang
+        if (!video.embedUrl && video.downloadUrl) {
+            // Asumsi: Jika ada downloadUrl, kita bisa membuat embedUrl
+            // Logika ini mungkin perlu disesuaikan tergantung format URL Anda
+            video.embedUrl = video.downloadUrl.replace('download/', 'embed/');
+        }
+
         return {
             props: {
                 video,
@@ -49,7 +56,6 @@ export default function VideoPage({ video }) {
     const [minutes, seconds] = duration.split(':');
     const durasiFormatted = `${minutes} : ${seconds}`;
     
-    // PERBAIKAN: Memproses kategori
     let categoriesArray = categories;
     if (typeof categories === 'string') {
         categoriesArray = categories.split(',').map(cat => cat.trim());
