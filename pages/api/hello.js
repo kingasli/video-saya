@@ -1,6 +1,3 @@
-// Tambahkan baris ini di bagian paling atas file Anda
-export const runtime = 'edge';
-
 export default function handler(req, res) {
   res.status(200).json({ name: 'John Doe' });
 }
