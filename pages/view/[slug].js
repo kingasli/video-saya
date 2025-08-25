@@ -1,5 +1,5 @@
 // Tambahkan baris ini di bagian paling atas file Anda
-export const runtime = 'edge'; 
+export const runtime = 'edge';
 
 import Head from 'next/head';
 import Link from 'next/link';
