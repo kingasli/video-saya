@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 
-// GANTI DENGAN URL WORKER AKUN B
+// GANTI DENGAN URL WORKER ANDA
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
 export default function Search() {
@@ -13,7 +13,6 @@ export default function Search() {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // Hapus useState searchQuery karena sudah ada di Layout.js
 
     useEffect(() => {
         if (!keyword) {
@@ -26,10 +25,14 @@ export default function Search() {
             setError(null);
             try {
                 const res = await fetch(`${API_URL}/api/search?keyword=${encodeURIComponent(keyword)}`);
+                
+                // Cek status respons, jika tidak OK, tangkap error
                 if (!res.ok) {
-                    throw new Error(`Gagal mengambil data pencarian: ${res.statusText}`);
+                    throw new Error(`Gagal mengambil data: ${res.statusText}`);
                 }
+                
                 const data = await res.json();
+                
                 if (data && Array.isArray(data.videos)) {
                     setVideos(data.videos);
                 } else {
@@ -53,12 +56,10 @@ export default function Search() {
                 <title>{title}</title>
             </Head>
             
-            {/* Hapus bilah pencarian dari sini */}
-            
             <h1 className="text-2xl font-bold mb-6 text-white">{title}</h1>
 
             {loading && <p>Mencari video...</p>}
-            {error && <p className="text-red-500">Error: {error}</p>}
+            {error && <p className="text-red-500">Error: {error}. Mohon pastikan API Worker Anda berjalan dan mengizinkan CORS.</p>}
             
             {!loading && !error && videos.length === 0 && (
                 <p>Tidak ada video yang ditemukan.</p>
