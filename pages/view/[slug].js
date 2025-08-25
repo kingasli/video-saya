@@ -4,6 +4,8 @@ import Link from 'next/link';
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
+export const runtime = 'edge';
+
 export async function getServerSideProps({ params }) {
     try {
         const res = await fetch(`${API_URL}/api/videos/${params.slug}`);
