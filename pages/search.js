@@ -27,10 +27,15 @@ export default function Search() {
             try {
                 const res = await fetch(`${API_URL}/api/search?keyword=${encodeURIComponent(keyword)}`);
                 if (!res.ok) {
-                    throw new Error('Gagal mengambil data pencarian');
+                    throw new Error(`Gagal mengambil data pencarian: ${res.statusText}`);
                 }
                 const data = await res.json();
-                setVideos(data.videos || []);
+                // Periksa apakah data.videos ada dan merupakan array
+                if (data && Array.isArray(data.videos)) {
+                    setVideos(data.videos);
+                } else {
+                    setVideos([]);
+                }
             } catch (err) {
                 setError(err.message);
             } finally {
