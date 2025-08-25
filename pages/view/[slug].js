@@ -4,8 +4,8 @@ import { useRouter } from 'next/router';
 // GANTI URL INI DENGAN ALAMAT GUDANG (WORKER) ANDA DI AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev'
 
-// Hapus atau komentari baris ini jika menggunakan getServerSideProps
-// export const runtime = 'experimental-edge'; 
+// Gunakan 'edge' atau 'experimental-edge' untuk mengaktifkan Edge Runtime
+export const runtime = 'experimental-edge'; 
 
 // Menggunakan getServerSideProps untuk mengambil data saat permintaan masuk
 export async function getServerSideProps({ params }) {
