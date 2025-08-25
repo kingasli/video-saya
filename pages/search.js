@@ -9,13 +9,14 @@ const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
 export default function Search() {
     const router = useRouter();
-    const { q } = router.query;
+    const { keyword } = router.query;
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState(keyword || '');
 
     useEffect(() => {
-        if (!q) {
+        if (!keyword) {
             setLoading(false);
             return;
         }
@@ -24,7 +25,7 @@ export default function Search() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(q)}`);
+                const res = await fetch(`${API_URL}/api/search?keyword=${encodeURIComponent(keyword)}`);
                 if (!res.ok) {
                     throw new Error('Gagal mengambil data pencarian');
                 }
@@ -38,15 +39,39 @@ export default function Search() {
         };
 
         fetchVideos();
-    }, [q]);
+    }, [keyword]);
 
-    const title = q ? `Hasil Pencarian untuk: "${q}"` : 'Pencarian Video';
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?keyword=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
+    const title = keyword ? `Hasil Pencarian untuk: "${keyword}"` : 'Pencarian Video';
 
     return (
         <Layout>
             <Head>
                 <title>{title}</title>
             </Head>
+            
+            {/* BILAH PENCARIAN BARU */}
+            <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto mb-10">
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Pencarian video..."
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-md text-gray-100 bg-gray-800 border-2 border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                />
+                <button type="submit" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </form>
+
             <h1 className="text-2xl font-bold mb-6 text-white">{title}</h1>
 
             {loading && <p>Mencari video...</p>}

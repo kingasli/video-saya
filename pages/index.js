@@ -1,10 +1,12 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
-const VIDEOS_PER_PAGE = 16;
+const VIDEOS_PER_PAGE = 9; // Mengubah limit ke 9 sesuai worker Anda
 
 export const runtime = 'experimental-edge';
 
@@ -13,12 +15,11 @@ export async function getServerSideProps({ query }) {
     const offset = (page - 1) * VIDEOS_PER_PAGE;
 
     try {
-        const res = await fetch(`${API_URL}/api/videos?limit=${VIDEOS_PER_PAGE}&offset=${offset}`);
+        const res = await fetch(`${API_URL}/api/videos?page=${page}`);
         const data = await res.json();
         
         const videos = data.videos || [];
-        const totalCount = data.totalCount || 0;
-        const totalPages = Math.ceil(totalCount / VIDEOS_PER_PAGE);
+        const totalPages = data.totalPages || 1;
 
         return {
             props: {
@@ -40,13 +41,40 @@ export async function getServerSideProps({ query }) {
 }
 
 export default function Home({ videos, totalPages, currentPage }) {
+    const [query, setQuery] = useState('');
+    const router = useRouter();
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            router.push(`/search?keyword=${encodeURIComponent(query)}`);
+        }
+    };
+
     return (
         <Layout>
             <Head>
                 <title>Video Saya</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            
+            {/* BILAH PENCARIAN BARU */}
+            <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto mb-10">
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Pencarian video..."
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-md text-gray-100 bg-gray-800 border-2 border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                />
+                <button type="submit" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 {videos.map((video) => (
                     <Link key={video.slug} href={`/view/${video.slug}`} className="block overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-gray-800">
                         <div className="relative w-full h-42">
