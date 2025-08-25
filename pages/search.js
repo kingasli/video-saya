@@ -28,7 +28,9 @@ export default function Search() {
                 const res = await fetch(`${API_URL_BASE}/api/search?keyword=${encodeURIComponent(keyword)}`);
                 
                 if (!res.ok) {
-                    throw new Error(`Gagal mengambil data: ${res.statusText}`);
+                    // Jika res.statusText kosong, gunakan pesan default
+                    const statusText = res.statusText || 'Kesalahan respons server';
+                    throw new Error(`Gagal mengambil data: ${statusText}`);
                 }
                 
                 const data = await res.json();
@@ -59,7 +61,7 @@ export default function Search() {
             <h1 className="text-2xl font-bold mb-6 text-white">{title}</h1>
 
             {loading && <p>Mencari video...</p>}
-            {error && <p className="text-red-500">Error: {error}. Mohon pastikan API Worker Anda berjalan.</p>}
+            {error && <p className="text-red-500">Error: {error}.</p>}
             
             {!loading && !error && videos.length === 0 && (
                 <p>Tidak ada video yang ditemukan.</p>
