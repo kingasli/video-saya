@@ -4,39 +4,9 @@ import Link from 'next/link';
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
-export async function getStaticPaths() {
-    try {
-        const res = await fetch(`${API_URL}/api/videos`);
-        const { videos } = await res.json();
-        
-        if (!videos || videos.length === 0) {
-            return {
-                paths: [],
-                fallback: false,
-            };
-        }
+export const runtime = 'edge';
 
-        const allCategories = new Set();
-        videos.forEach(video => {
-            if (typeof video.categories === 'string') {
-                video.categories.split(',').map(cat => cat.trim()).forEach(cat => allCategories.add(cat));
-            } else if (Array.isArray(video.categories)) {
-                video.categories.forEach(cat => allCategories.add(cat));
-            }
-        });
-
-        const paths = Array.from(allCategories).map(category => ({
-            params: { category },
-        }));
-
-        return { paths, fallback: false };
-    } catch (error) {
-        console.error('Failed to fetch category paths:', error);
-        return { paths: [], fallback: false };
-    }
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
     try {
         const res = await fetch(`${API_URL}/api/videos`);
         const { videos } = await res.json();
@@ -53,6 +23,10 @@ export async function getStaticProps({ params }) {
             }
             return false;
         });
+
+        if (filteredVideos.length === 0) {
+            return { notFound: true };
+        }
 
         return {
             props: {
@@ -98,4 +72,3 @@ export default function CategoryPage({ category, videos }) {
         </div>
     );
 }
-
