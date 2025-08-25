@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx @cloudflare/next-on-pages@2",
+    "build": "next build && npx @cloudflare/next-on-pages@1",
     "start": "next start",
     "lint": "next lint"
   },
@@ -14,7 +14,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^2.0.1",
+    "@cloudflare/next-on-pages": "^1.13.14",
     "@eslint/eslintrc": "^3.0.0",
     "@tailwindcss/postcss": "^4.2.0",
     "eslint": "^9.8.0",
