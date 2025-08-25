@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 
-// GANTI DENGAN URL WORKER ANDA
-const API_URL = 'https://kitacoba.kingkep123.workers.dev';
+// Gunakan path relatif, Next.js akan menanganinya
+const API_URL_BASE = ''; // Tidak perlu URL penuh, cukup kosongkan atau pakai ''
 
 export default function Search() {
     const router = useRouter();
@@ -24,9 +24,9 @@ export default function Search() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`${API_URL}/api/search?keyword=${encodeURIComponent(keyword)}`);
+                // Perbaiki URL fetch menjadi path relatif
+                const res = await fetch(`${API_URL_BASE}/api/search?keyword=${encodeURIComponent(keyword)}`);
                 
-                // Cek status respons, jika tidak OK, tangkap error 
                 if (!res.ok) {
                     throw new Error(`Gagal mengambil data: ${res.statusText}`);
                 }
@@ -59,7 +59,7 @@ export default function Search() {
             <h1 className="text-2xl font-bold mb-6 text-white">{title}</h1>
 
             {loading && <p>Mencari video...</p>}
-            {error && <p className="text-red-500">Error: {error}. Mohon pastikan API Worker Anda berjalan dan mengizinkan CORS.</p>}
+            {error && <p className="text-red-500">Error: {error}. Mohon pastikan API Worker Anda berjalan.</p>}
             
             {!loading && !error && videos.length === 0 && (
                 <p>Tidak ada video yang ditemukan.</p>
