@@ -1,18 +1,14 @@
-    /** @type {import('next').NextConfig} */
-    const nextConfig = {
-      reactStrictMode: true,
-      env: {
-        DB: process.env.DB,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/search',
+        destination: '/api/search',
       },
-      async rewrites() {
-        return [
-          {
-            source: '/api/search',
-            destination: '/api/search',
-          },
-        ];
-      },
-    };
+    ];
+  },
+};
 
-    export default nextConfig;
-    
+export default nextConfig;
