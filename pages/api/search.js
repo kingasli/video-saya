@@ -1,46 +1,51 @@
-// Ini adalah Next.js API Route.
-// Next.js akan menjalankannya sebagai serverless function.
+// PENTING: Deklarasi untuk Edge Runtime
+// Ini diperlukan agar dapat mengakses D1 Database.
+export const runtime = 'edge';
 
-// Fungsi ini akan menangani permintaan ke /api/search
-export default async function handler(req, res) {
-    // Periksa metode HTTP, hanya izinkan GET
-    if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
+// Handler untuk Next.js API Route
+export default async function handler(request) {
+    // Hanya izinkan metode GET
+    if (request.method !== 'GET') {
+        return new Response(JSON.stringify({ message: 'Method Not Allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 
     try {
-        // Ambil keyword dari query string
-        const { keyword } = req.query;
+        const { searchParams } = new URL(request.url);
+        const keyword = searchParams.get('keyword');
 
-        // Pastikan keyword ada
         if (!keyword) {
-            return res.status(400).json({ error: 'Keyword is required' });
+            return new Response(JSON.stringify({ error: 'Keyword is required' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
-
-        // --- Ini adalah kode dari Worker Anda, digabungkan di sini ---
-        // Anda perlu memastikan D1 Database Anda terikat dengan benar ke proyek Next.js Anda di Cloudflare Pages
-        // Biasanya ini dilakukan di dashboard Cloudflare Pages, di bagian "Settings" > "Functions"
         
-        // PENTING: Nama binding database harus sama dengan yang Anda konfigurasikan di Cloudflare Pages.
-        // Asumsi: binding-nya adalah 'DB'
-        
-        const { DB } = process.env;
+        // Akses D1 Database
+        const DB = process.env.DB;
 
         if (!DB) {
-            console.error('D1 Database binding (DB) is not configured.');
-            return res.status(500).json({ error: 'Database configuration error.' });
+            return new Response(JSON.stringify({ error: 'Database configuration error.' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
-        // Lakukan pencarian di D1 Database
         const { results: videos } = await DB.prepare('SELECT slug, title, thumbnailUrl, authorName FROM videos WHERE title LIKE ? ORDER BY publishedAt DESC')
             .bind(`%${keyword}%`)
             .all();
 
-        // Kirim hasil pencarian
-        return res.status(200).json({ videos: videos || [] });
+        return new Response(JSON.stringify({ videos: videos || [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
 
     } catch (error) {
-        console.error('Error in search API:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 }

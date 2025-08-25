@@ -4,9 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 
-// Gunakan path relatif, Next.js akan menanganinya
-const API_URL_BASE = ''; // Tidak perlu URL penuh, cukup kosongkan atau pakai ''
-
 export default function Search() {
     const router = useRouter();
     const { keyword } = router.query;
@@ -24,11 +21,10 @@ export default function Search() {
             setLoading(true);
             setError(null);
             try {
-                // Perbaiki URL fetch menjadi path relatif
-                const res = await fetch(`${API_URL_BASE}/api/search?keyword=${encodeURIComponent(keyword)}`);
+                // Panggil API Route di path relatif
+                const res = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
                 
                 if (!res.ok) {
-                    // Jika res.statusText kosong, gunakan pesan default
                     const statusText = res.statusText || 'Kesalahan respons server';
                     throw new Error(`Gagal mengambil data: ${statusText}`);
                 }
