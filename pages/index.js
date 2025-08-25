@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 export const runtime = 'experimental-edge'; // Tetap pertahankan baris ini
-
+// Perbaikan cache video
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
 export async function getServerSideProps() {
