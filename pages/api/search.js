@@ -1,6 +1,9 @@
+// PENTING: Deklarasi untuk Edge Runtime
 export const runtime = 'edge';
 
+// Handler untuk Next.js API Route
 export default async function handler(request) {
+    // Hanya izinkan metode GET
     if (request.method !== 'GET') {
         return new Response(JSON.stringify({ message: 'Method Not Allowed' }), {
             status: 405,
@@ -27,7 +30,17 @@ export default async function handler(request) {
                 headers: { 'Content-Type': 'application/json' },
             });
         }
+        
+        // Periksa apakah tabel `videos` ada
+        const tableCheck = await DB.prepare("PRAGMA table_info(videos)").all();
+        if (tableCheck.results.length === 0) {
+            return new Response(JSON.stringify({ error: 'Table "videos" does not exist.' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
 
+        // Jalankan query pencarian
         const { results: videos } = await DB.prepare('SELECT slug, title, thumbnailUrl, authorName FROM videos WHERE title LIKE ? ORDER BY publishedAt DESC')
             .bind(`%${keyword}%`)
             .all();
@@ -40,7 +53,7 @@ export default async function handler(request) {
     } catch (error) {
         // PERBAIKAN: Kirim pesan error yang lebih detail ke client
         console.error('API Error:', error.stack);
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ error: `Internal Server Error: ${error.message}` }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
         });
