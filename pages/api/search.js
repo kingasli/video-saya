@@ -1,11 +1,9 @@
-// PENTING: Deklarasi untuk Edge Runtime
+// Penting: Deklarasi untuk Edge Runtime
 export const runtime = 'edge';
 
-// Impor variabel lingkungan secara eksplisit dari Cloudflare
-import { env } from 'cloudflare:environment';
-
 // Handler utama untuk permintaan API
-export default async function handler(request) {
+// Perbaikan: Gunakan `context` sebagai argumen kedua
+export default async function handler(request, context) {
     // Pastikan metode permintaan adalah GET
     if (request.method !== 'GET') {
         return new Response(JSON.stringify({ message: 'Method Not Allowed' }), {
@@ -27,8 +25,9 @@ export default async function handler(request) {
             });
         }
         
-        // Akses binding D1 Database dari variabel lingkungan yang diimpor
-        const DB = env.DB;
+        // Perbaikan: Akses D1 Database binding dari context.env
+        // Ini adalah cara yang benar di Cloudflare Pages
+        const DB = context.env.DB;
 
         // Periksa apakah binding D1 Database ada
         if (!DB) {
