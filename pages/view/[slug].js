@@ -1,18 +1,37 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
-// Mengaktifkan Edge Runtime agar getServerSideProps bisa berjalan di Cloudflare Pages
-export const runtime = 'experimental-edge';
+export async function getStaticPaths() {
+    try {
+        const res = await fetch(`${API_URL}/api/videos`);
+        const { videos } = await res.json();
+        
+        if (!videos || videos.length === 0) {
+            return {
+                paths: [],
+                fallback: false,
+            };
+        }
 
-export async function getServerSideProps({ params }) {
+        const paths = videos.map((video) => ({
+            params: { slug: video.slug },
+        }));
+
+        return { paths, fallback: false };
+    } catch (error) {
+        console.error('Failed to fetch video paths:', error);
+        return { paths: [], fallback: false };
+    }
+}
+
+export async function getStaticProps({ params }) {
     try {
         const res = await fetch(`${API_URL}/api/videos/${params.slug}`);
         const video = await res.json();
-
+        
         if (!video || Object.keys(video).length === 0) {
             return { notFound: true };
         }
@@ -23,24 +42,14 @@ export async function getServerSideProps({ params }) {
             },
         };
     } catch (error) {
-        console.error('Gagal mengambil data video:', error);
+        console.error('Failed to fetch video data:', error);
         return { notFound: true };
     }
 }
 
 export default function VideoPage({ video }) {
-    const router = useRouter();
-
-    if (router.isFallback) {
-        return <div>Loading...</div>;
-    }
-
     if (!video) {
-        // Alihkan ke halaman 404 jika video tidak ditemukan
-        if (typeof window !== 'undefined') {
-            router.push('/404');
-        }
-        return null;
+        return <div>Video tidak ditemukan.</div>;
     }
 
     const {
