@@ -1,9 +1,3 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    serverExternalPackages: [
-      "@cloudflare/next-on-pages"
-    ]
-  }
-};
+const nextConfig = {};
 export default nextConfig;
