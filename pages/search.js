@@ -25,7 +25,7 @@ export default function Search() {
                 const res = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
                 
                 if (!res.ok) {
-                    // Ambil pesan error dari body respons
+                    // Ambil pesan error dari body respons 
                     const errorData = await res.json();
                     const errorMessage = errorData.error || res.statusText || 'Kesalahan respons server';
                     throw new Error(`Gagal mengambil data: ${errorMessage}`);
