@@ -69,6 +69,12 @@ export default function VideoPage({ video }) {
     });
     const [minutes, seconds] = duration.split(':');
     const durasiFormatted = `${minutes} : ${seconds}`;
+    
+    // PERBAIKAN: Memproses kategori
+    let categoriesArray = categories;
+    if (typeof categories === 'string') {
+        categoriesArray = categories.split(',').map(cat => cat.trim());
+    }
 
     return (
         <div style={{ backgroundColor: '#181818', minHeight: '100vh', color: '#fff', padding: '20px' }}>
@@ -104,7 +110,7 @@ export default function VideoPage({ video }) {
                     )}
                 </p>
                 <div style={{ marginBottom: '15px' }}>
-                    {categories && categories.map((cat) => (
+                    {categoriesArray && categoriesArray.map((cat) => (
                         <Link key={cat} href={`/categories/${cat}`} style={{ display: 'inline-block', backgroundColor: '#333', color: '#fff', padding: '5px 10px', marginRight: '5px', marginBottom: '5px', borderRadius: '5px', textDecoration: 'none' }}>
                             {cat}
                         </Link>
