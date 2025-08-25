@@ -4,30 +4,7 @@ import Link from 'next/link';
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
-export async function getStaticPaths() {
-    try {
-        const res = await fetch(`${API_URL}/api/videos`);
-        const { videos } = await res.json();
-        
-        if (!videos || videos.length === 0) {
-            return {
-                paths: [],
-                fallback: false,
-            };
-        }
-
-        const paths = videos.map((video) => ({
-            params: { slug: video.slug },
-        }));
-
-        return { paths, fallback: false };
-    } catch (error) {
-        console.error('Failed to fetch video paths:', error);
-        return { paths: [], fallback: false };
-    }
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
     try {
         const res = await fetch(`${API_URL}/api/videos/${params.slug}`);
         const video = await res.json();
