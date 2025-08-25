@@ -1,22 +1,27 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-// BARIS INI DITAMBAHKAN UNTUK MEMASTIKAN HALAMAN UTAMA BEKERJA DENGAN BENAR DI CLOUDFLARE PAGES
-export const runtime = 'experimental-edge';
+export const runtime = 'experimental-edge'; // Tetap pertahankan baris ini
 
-// GANTI URL INI DENGAN ALAMAT GUDANG (WORKER) ANDA DI AKUN B
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
-export async function getStaticProps() {
-    const res = await fetch(`${API_URL}/api/videos`);
-    const { videos } = await res.json();
-
-    return {
-        props: {
-            videos,
-        },
-        revalidate: 60,
-    };
+export async function getServerSideProps() {
+    try {
+        const res = await fetch(`${API_URL}/api/videos`);
+        const { videos } = await res.json();
+        return {
+            props: {
+                videos,
+            },
+        };
+    } catch (error) {
+        console.error('Failed to fetch videos:', error);
+        return {
+            props: {
+                videos: [], // Mengembalikan array kosong jika gagal
+            },
+        };
+    }
 }
 
 export default function HomePage({ videos }) {
