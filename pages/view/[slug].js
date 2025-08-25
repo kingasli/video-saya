@@ -4,32 +4,29 @@ import { useRouter } from 'next/router';
 // GANTI URL INI DENGAN ALAMAT GUDANG (WORKER) ANDA DI AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev'
 
-export const runtime = 'experimental-edge';
+// Hapus atau komentari baris ini jika menggunakan getServerSideProps
+// export const runtime = 'experimental-edge'; 
 
-export async function getStaticPaths() {
-    const res = await fetch(`${API_URL}/api/videos`);
-    const { videos } = await res.json();
-    const paths = videos.map((video) => ({
-        params: { slug: video.slug },
-    }));
+// Menggunakan getServerSideProps untuk mengambil data saat permintaan masuk
+export async function getServerSideProps({ params }) {
+    try {
+        const res = await fetch(`${API_URL}/api/videos/${params.slug}`);
+        const video = await res.json();
 
-    return { paths, fallback: 'blocking' };
-}
+        // Jika API mengembalikan data kosong atau tidak valid
+        if (!video || Object.keys(video).length === 0) {
+            return { notFound: true };
+        }
 
-export async function getStaticProps({ params }) {
-    const res = await fetch(`${API_URL}/api/videos/${params.slug}`);
-    const video = await res.json();
-
-    if (!video || Object.keys(video).length === 0) {
+        return {
+            props: {
+                video,
+            },
+        };
+    } catch (error) {
+        console.error('Failed to fetch video data:', error);
         return { notFound: true };
     }
-
-    return {
-        props: {
-            video,
-        },
-        revalidate: 60,
-    };
 }
 
 export default function VideoPage({ video }) {
@@ -39,7 +36,7 @@ export default function VideoPage({ video }) {
         return <div>Loading...</div>;
     }
 
-    // Pastikan objek 'video' ada dan isinya tidak kosong
+    // Tampilkan pesan jika data video tidak ada
     if (!video) {
         return <div>Video tidak ditemukan.</div>;
     }
