@@ -36,7 +36,11 @@ export default function VideoPage({ video }) {
     }
 
     if (!video) {
-        return <div>Video tidak ditemukan.</div>;
+        // Alihkan ke halaman 404 jika video tidak ditemukan
+        if (typeof window !== 'undefined') {
+            router.push('/404');
+        }
+        return null;
     }
 
     const {
