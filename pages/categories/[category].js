@@ -8,67 +8,66 @@ export const runtime = 'experimental-edge';
 
 export async function getServerSideProps({ params }) {
     try {
-        const res = await fetch(`${API_URL}/api/videos`);
-        const { videos } = await res.json();
+        const categoryName = params.category;
+        const res = await fetch(`${API_URL}/api/videos/category/${categoryName}`);
+        const videos = await res.json();
         
-        if (!videos || videos.length === 0) {
-            return { notFound: true };
-        }
-
-        const filteredVideos = videos.filter(video => {
-            if (typeof video.categories === 'string') {
-                return video.categories.split(',').map(cat => cat.trim()).includes(params.category);
-            } else if (Array.isArray(video.categories)) {
-                return video.categories.includes(params.category);
-            }
-            return false;
-        });
-
-        if (filteredVideos.length === 0) {
-            return { notFound: true };
-        }
-
         return {
             props: {
-                category: params.category,
-                videos: filteredVideos,
+                videos: videos || [],
+                categoryName,
             },
         };
     } catch (error) {
-        console.error('Failed to fetch videos for category:', error);
-        return { notFound: true };
+        console.error('Failed to fetch videos by category:', error);
+        return {
+            props: {
+                videos: [],
+                categoryName: params.category,
+            },
+        };
     }
 }
 
-export default function CategoryPage({ category, videos }) {
+export default function CategoryPage({ videos, categoryName }) {
+    const title = categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/-/g, ' ');
+
     return (
-        <div style={{ backgroundColor: '#181818', minHeight: '100vh', color: '#fff', padding: '20px' }}>
+        <div className="bg-gray-900 min-h-screen text-gray-100 p-8 font-sans">
             <Head>
-                <title>Kategori: {category}</title>
+                <title>{title}</title>
             </Head>
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <Link href="/" style={{ color: '#3498db', textDecoration: 'none', marginBottom: '20px', display: 'block' }}>
-                    &larr; Kembali ke Beranda
+            <header className="flex justify-between items-center mb-10">
+                <Link href="/" className="text-3xl font-bold text-white tracking-wide">
+                    Video Saya
                 </Link>
-                <h1 style={{ textTransform: 'capitalize' }}>Kategori: {category}</h1>
-                <p>{videos.length} video ditemukan.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginTop: '20px' }}>
-                    {videos.length > 0 ? (
-                        videos.map(video => (
-                            <Link key={video.slug} href={`/view/${video.slug}`} style={{ textDecoration: 'none', color: '#fff' }}>
-                                <div style={{ backgroundColor: '#222', padding: '10px', borderRadius: '8px' }}>
-                                    <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
-                                        <img src={video.thumbnailUrl} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
-                                    </div>
-                                    <h2 style={{ fontSize: '16px', marginTop: '10px' }}>{video.title}</h2>
-                                </div>
-                            </Link>
-                        ))
-                    ) : (
-                        <p>Tidak ada video dalam kategori ini.</p>
-                    )}
+                <nav>
+                    <Link href="/categories" className="text-gray-400 hover:text-white transition duration-300">
+                        Kategori
+                    </Link>
+                </nav>
+            </header>
+            <main>
+                <h1 className="text-3xl font-bold mb-6 text-white">{title}</h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {videos.map((video) => (
+                        <Link key={video.slug} href={`/view/${video.slug}`} className="block overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-gray-800">
+                            <div className="relative w-full h-42">
+                                <img
+                                    src={video.thumbnailUrl}
+                                    alt={video.title}
+                                    className="w-full h-full object-cover"
+                                    style={{ width: '300px', height: '168px' }}
+                                />
+                            </div>
+                            <div className="p-4">
+                                <h2 className="text-sm font-semibold text-white mb-1 leading-snug truncate">{video.title}</h2>
+                                <p className="text-xs text-gray-400 truncate">{video.authorName}</p>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
-            </div>
+            </main>
         </div>
     );
 }
