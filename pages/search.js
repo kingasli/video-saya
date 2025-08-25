@@ -26,7 +26,7 @@ export default function Search() {
             try {
                 const res = await fetch(`${API_URL}/api/search?keyword=${encodeURIComponent(keyword)}`);
                 
-                // Cek status respons, jika tidak OK, tangkap error
+                // Cek status respons, jika tidak OK, tangkap error 
                 if (!res.ok) {
                     throw new Error(`Gagal mengambil data: ${res.statusText}`);
                 }

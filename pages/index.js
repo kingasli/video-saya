@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-// GANTI DENGAN URL WORKER AKUN B
+// GANTI DENGAN URL WORKER AKUN B 
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 const VIDEOS_PER_PAGE = 9;
 
