@@ -1,10 +1,6 @@
-// PENTING: Deklarasi untuk Edge Runtime
-// Ini diperlukan agar dapat mengakses D1 Database.
 export const runtime = 'edge';
 
-// Handler untuk Next.js API Route
 export default async function handler(request) {
-    // Hanya izinkan metode GET
     if (request.method !== 'GET') {
         return new Response(JSON.stringify({ message: 'Method Not Allowed' }), {
             status: 405,
@@ -23,7 +19,6 @@ export default async function handler(request) {
             });
         }
         
-        // Akses D1 Database
         const DB = process.env.DB;
 
         if (!DB) {
@@ -43,7 +38,9 @@ export default async function handler(request) {
         });
 
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+        // PERBAIKAN: Kirim pesan error yang lebih detail ke client
+        console.error('API Error:', error.stack);
+        return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
         });
