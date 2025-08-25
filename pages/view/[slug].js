@@ -15,11 +15,9 @@ export async function getServerSideProps({ params }) {
             return { notFound: true };
         }
 
-        // Logika tambahan untuk menangani data embed video yang hilang
-        if (!video.embedUrl && video.downloadUrl) {
-            // Asumsi: Jika ada downloadUrl, kita bisa membuat embedUrl
-            // Logika ini mungkin perlu disesuaikan tergantung format URL Anda
-            video.embedUrl = video.downloadUrl.replace('download/', 'embed/');
+        // Logika tambahan untuk memastikan embedUrl menggunakan HTTPS
+        if (video.embedUrl && video.embedUrl.startsWith('http://')) {
+            video.embedUrl = video.embedUrl.replace('http://', 'https://');
         }
 
         return {
@@ -53,6 +51,7 @@ export default function VideoPage({ video }) {
         month: 'short',
         year: 'numeric',
     });
+    
     const [minutes, seconds] = duration.split(':');
     const durasiFormatted = `${minutes} : ${seconds}`;
     
