@@ -1,12 +1,19 @@
-# wrangler.toml
-
-# Nama proyek Cloudflare Pages Anda
+# Nama proyek Anda di Cloudflare Pages
 name = "video-saya"
-# Tanggal kompatibilitas
-compatibility_date = "2024-01-01"
 
-# Deklarasi D1 Database Binding
+# Konfigurasi untuk Pages Functions
+[pages_build_output]
+# Folder output build Next.js. Ini akan selalu menjadi ".next/static" dan ".next/server"
+functions_directory = ".next/server"
+static_directory = ".next/static"
+
+# Pengaturan tambahan untuk Pages Functions
+[pages_build_output.functions_settings]
+# Gunakan kompatibilitas Node.js untuk memastikan modul Next.js berfungsi
+nodejs_compat = true
+
+# Konfigurasi binding D1
 [[d1_databases]]
 binding = "DB"
-database_name = "website-video-db"
-database_id = "679406db-a38f-4cf1-adb7-0a226ed29a11"
+database_name = "nama-database-anda" # Ganti dengan nama database D1 Anda
+database_id = "your-database-id" # Ganti dengan ID database Anda
