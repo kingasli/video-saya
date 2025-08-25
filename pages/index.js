@@ -5,7 +5,7 @@ import Link from 'next/link';
 export const runtime = 'experimental-edge';
 
 // GANTI URL INI DENGAN ALAMAT GUDANG (WORKER) ANDA DI AKUN B
-const API_URL = 'https://kitacoba.kingkep123.workers.dev';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getStaticProps() {
     const res = await fetch(`${API_URL}/api/videos`);
