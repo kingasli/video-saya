@@ -40,7 +40,7 @@ export default async function handler(request) {
             .bind(`%${keyword}%`)
             .all();
 
-        // Kembalikan hasil dalam format JSON 
+        // Kembalikan hasil dalam format JSON
         return new Response(JSON.stringify({ videos: videos || [] }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },

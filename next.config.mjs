@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // PENTING: Tambahkan rewrites untuk membuat variabel lingkungan tersedia
-  // di Edge Runtime.
+  // PENTING: Tambahkan variabel lingkungan secara eksplisit.
+  // Ganti `website-video-db` dengan nama database D1 Anda jika berbeda.
+  env: {
+    DB: process.env.DB,
+  },
   async rewrites() {
     return [
       {
