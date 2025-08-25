@@ -1,54 +1,99 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-export const runtime = 'experimental-edge'; // Tetap pertahankan baris ini
-// Perbaikan cache video
+// GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
+const VIDEOS_PER_PAGE = 16; // Menampilkan 4 baris dengan 4 video per baris
 
-export async function getServerSideProps() {
+export const runtime = 'experimental-edge';
+
+export async function getServerSideProps({ query }) {
+    const page = parseInt(query.page) || 1;
+    const offset = (page - 1) * VIDEOS_PER_PAGE;
+
     try {
-        const res = await fetch(`${API_URL}/api/videos`);
-        const { videos } = await res.json();
+        const res = await fetch(`${API_URL}/api/videos?limit=${VIDEOS_PER_PAGE}&offset=${offset}`);
+        const data = await res.json();
+        
+        // Asumsi API mengembalikan total count dan array videos
+        const videos = data.videos || [];
+        const totalCount = data.totalCount || 0;
+        const totalPages = Math.ceil(totalCount / VIDEOS_PER_PAGE);
+
         return {
             props: {
                 videos,
+                totalPages,
+                currentPage: page,
             },
         };
     } catch (error) {
         console.error('Failed to fetch videos:', error);
         return {
             props: {
-                videos: [], // Mengembalikan array kosong jika gagal
+                videos: [],
+                totalPages: 1,
+                currentPage: 1,
             },
         };
     }
 }
 
-export default function HomePage({ videos }) {
+export default function Home({ videos, totalPages, currentPage }) {
     return (
-        <div>
+        <div className="bg-gray-900 min-h-screen text-gray-100 p-8 font-sans">
             <Head>
-                <title>Toko Video Saya</title>
+                <title>Video Saya</title>
+                <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-6 text-center">Video Terbaru</h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <header className="flex justify-between items-center mb-10">
+                <Link href="/" className="text-3xl font-bold text-white tracking-wide">
+                    Video Saya
+                </Link>
+                <nav>
+                    <Link href="/categories" className="text-gray-400 hover:text-white transition duration-300">
+                        Kategori
+                    </Link>
+                </nav>
+            </header>
+
+            <main>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {videos.map((video) => (
-                        <div key={video.slug} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
-                            <Link href={`/view/${video.slug}`}>
-                                <img src={video.thumbnailUrl} alt={video.title} className="w-full h-48 object-cover" />
-                            </Link>
-                            <div className="p-4">
-                                <h2 className="text-xl font-semibold text-gray-800">
-                                    <Link href={`/view/${video.slug}`}>
-                                        {video.title}
-                                    </Link>
-                                </h2>
+                        <Link key={video.slug} href={`/view/${video.slug}`} className="block overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-gray-800">
+                            <div className="relative w-full h-42">
+                                <img
+                                    src={video.thumbnailUrl}
+                                    alt={video.title}
+                                    className="w-full h-full object-cover"
+                                    style={{ width: '300px', height: '168px' }}
+                                />
                             </div>
-                        </div>
+                            <div className="p-4">
+                                <h2 className="text-sm font-semibold text-white mb-1 leading-snug truncate">{video.title}</h2>
+                                <p className="text-xs text-gray-400 truncate">{video.authorName}</p>
+                            </div>
+                        </Link>
                     ))}
                 </div>
-            </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-10 space-x-2">
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <Link 
+                                key={i + 1} 
+                                href={`/?page=${i + 1}`} 
+                                className={`px-4 py-2 rounded-lg font-bold transition-colors duration-200 
+                                    ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-blue-600 hover:text-white'}`}
+                            >
+                                {i + 1}
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </main>
         </div>
     );
 }
