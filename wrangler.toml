@@ -1,0 +1,12 @@
+# wrangler.toml
+
+# Nama proyek Cloudflare Pages Anda
+name = "video-saya"
+# Tanggal kompatibilitas
+compatibility_date = "2024-01-01"
+
+# Deklarasi D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "website-video-db"
+database_id = "679406db-a38f-4cf1-adb7-0a226ed29a11"
