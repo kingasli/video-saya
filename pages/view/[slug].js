@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import Layout from '../../components/Layout';
 
 // GANTI DENGAN URL WORKER AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
@@ -15,7 +16,6 @@ export async function getServerSideProps({ params }) {
             return { notFound: true };
         }
 
-        // Logika tambahan untuk memastikan embedUrl menggunakan HTTPS
         if (video.embedUrl && video.embedUrl.startsWith('http://')) {
             video.embedUrl = video.embedUrl.replace('http://', 'https://');
         }
@@ -61,7 +61,7 @@ export default function VideoPage({ video }) {
     }
 
     return (
-        <div style={{ backgroundColor: '#181818', minHeight: '100vh', color: '#fff', padding: '20px' }}>
+        <Layout>
             <Head>
                 <title>{title}</title>
             </Head>
@@ -105,6 +105,6 @@ export default function VideoPage({ video }) {
                     <div>Belum ada video terkait.</div>
                 </div>
             </div>
-        </div>
+        </Layout>
     );
 }
