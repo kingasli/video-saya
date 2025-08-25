@@ -1,6 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
+// BARIS INI DITAMBAHKAN UNTUK MEMASTIKAN HALAMAN UTAMA BEKERJA DENGAN BENAR DI CLOUDFLARE PAGES
+export const runtime = 'experimental-edge';
+
 // GANTI URL INI DENGAN ALAMAT GUDANG (WORKER) ANDA DI AKUN B
 const API_URL = 'https://kitacoba.kingkep123.workers.dev';
 
