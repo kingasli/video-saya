@@ -13,7 +13,6 @@ export default function Search() {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
     // Hapus useState searchQuery karena sudah ada di Layout.js
 
     useEffect(() => {
