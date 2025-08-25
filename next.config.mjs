@@ -2,7 +2,7 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@cloudflare/next-on-pages'],
-    runtime: 'edge', // Ini adalah baris penting yang kita tambahkan
+    runtime: 'experimental-edge', // BARIS INI YANG DIUBAH
   },
 };
 
